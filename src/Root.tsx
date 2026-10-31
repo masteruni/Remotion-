@@ -2,12 +2,27 @@ import { Composition, Folder } from "remotion";
 import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
+import { Keynote, keynoteSchema } from "./Keynote/Keynote";
+import { TOTAL_SECONDS } from "./Keynote/theme";
 
 // Each <Composition> is an entry in the sidebar!
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="LeilunaKeynote"
+        component={Keynote}
+        schema={keynoteSchema}
+        durationInFrames={TOTAL_SECONDS * 30}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          footageSrc: "",
+          soundtrack: true,
+        }}
+      />
       <Folder name="Elements">
         <Composition
           id="Logo"
