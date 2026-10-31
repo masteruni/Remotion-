@@ -20,3 +20,6 @@ Add `--browser-executable=/opt/pw-browsers/chromium` to render and still command
 ## Conventions
 - Drive animation from `useCurrentFrame()` with `interpolate()` or `spring()`. Never use CSS transitions or `setTimeout`, because frames render on their own.
 - Use `<Sequence>` or `<Series>` for timing, `<OffthreadVideo>` for video clips, `<Audio>` for sound, and `<Img>` for images.
+
+## Skills
+`.claude/skills/remotion-best-practices/` is Remotion's official skill (router plus topic references). It was copied from github.com/remotion-dev/skills at commit 30d4553 (v4.0.539). Load it before writing or editing compositions. To update it, copy that folder again from the upstream repo.
