@@ -22,7 +22,7 @@ const NeonText: React.FC = () => {
 		fontFamily: FONT,
 		fontStyle: 'italic',
 		fontWeight: 800,
-		fontSize: 172,
+		fontSize: 128,
 		letterSpacing: '-0.035em',
 		whiteSpace: 'nowrap',
 		lineHeight: 1,
@@ -97,7 +97,7 @@ const Lockup: React.FC = () => {
 					style={{
 						fontFamily: FONT,
 						fontWeight: 500,
-						fontSize: 34,
+						fontSize: 28,
 						letterSpacing: interpolate(frame, [18, 40], [0.5, 0.32], clamp) + 'em',
 						color: '#C9CDD6',
 						opacity: interpolate(frame, [18, 32], [0, 1], clamp),

@@ -64,7 +64,7 @@ const SnapWord: React.FC<{text: string; start: number}> = ({text, start}) => {
 						scale: String(interpolate(pop, [0, 1], [0.35, 1])),
 						translate: `${interpolate(pop, [0, 1], [-60, 0])}px 0px`,
 						transformOrigin: '0% 60%',
-						textShadow: '0 18px 50px rgba(255,90,78,0.25)',
+						textShadow: '0 10px 34px rgba(255,90,78,0.45), 0 2px 8px rgba(255,90,78,0.25)',
 					}}
 				>
 					{text}
@@ -93,7 +93,7 @@ const Headline: React.FC = () => {
 				style={{
 					fontFamily: FONT,
 					fontWeight: 800,
-					fontSize: 128,
+					fontSize: 120,
 					letterSpacing: '-0.045em',
 					color: COLORS.ink,
 					display: 'flex',

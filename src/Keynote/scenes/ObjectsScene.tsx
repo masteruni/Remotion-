@@ -41,8 +41,8 @@ const Environment: React.FC = () => {
 const CameraRig: React.FC<{x: number; height: number}> = ({x, height}) => {
 	const camera = useThree((s) => s.camera);
 	useLayoutEffect(() => {
-		camera.position.set(x, height, 3.6);
-		camera.lookAt(x * 0.85, 0, 0.15);
+		camera.position.set(x, height, 1.2);
+		camera.lookAt(x, 0, 0.1);
 		camera.updateProjectionMatrix();
 	}, [camera, x, height]);
 	return null;
@@ -55,13 +55,12 @@ const useGridPaper = () =>
 		canvas.width = size;
 		canvas.height = size;
 		const ctx = canvas.getContext('2d')!;
-		ctx.fillStyle = '#FBFBFA';
+		ctx.fillStyle = '#ECECEE';
 		ctx.fillRect(0, 0, size, size);
-		const minor = size / 16;
-		for (let i = 0; i <= 16; i++) {
-			const major = i % 4 === 0;
-			ctx.strokeStyle = major ? '#B9C6D8' : '#D9E0EA';
-			ctx.lineWidth = major ? 3 : 1.5;
+		const minor = size / 4;
+		for (let i = 0; i <= 4; i++) {
+			ctx.strokeStyle = '#A9A9B0';
+			ctx.lineWidth = 7;
 			ctx.beginPath();
 			ctx.moveTo(i * minor, 0);
 			ctx.lineTo(i * minor, size);
@@ -72,7 +71,7 @@ const useGridPaper = () =>
 		const tex = new THREE.CanvasTexture(canvas);
 		tex.wrapS = THREE.RepeatWrapping;
 		tex.wrapT = THREE.RepeatWrapping;
-		tex.repeat.set(10, 10);
+		tex.repeat.set(7, 7);
 		tex.anisotropy = 8;
 		tex.colorSpace = THREE.SRGBColorSpace;
 		return tex;
@@ -108,7 +107,7 @@ const Lens: React.FC<{start: number}> = ({start}) => {
 	return (
 		<group
 			visible={visible}
-			position={[-2.35, y, 0.15]}
+			position={[-3.2, y, 0.3]}
 			rotation={[tumble * 0.9, tumble * 1.5, tumble * -0.6]}
 		>
 			<mesh castShadow receiveShadow position={[0, 0.3, 0]}>
@@ -176,7 +175,7 @@ const Diamond: React.FC<{start: number}> = ({start}) => {
 	return (
 		<group
 			visible={visible}
-			position={[0.05, y + 0.42, -0.35]}
+			position={[0, y + 0.42, -0.2]}
 			rotation={[Math.PI + 0.18 + tumble, frame * 0.02 + tumble * 2, 0.12]}
 		>
 			<mesh castShadow geometry={geometry}>
@@ -239,7 +238,7 @@ const PlayButton: React.FC<{start: number}> = ({start}) => {
 	return (
 		<group
 			visible={visible}
-			position={[2.35, y + 0.24, 0.2]}
+			position={[3.2, y + 0.24, 0.9]}
 			rotation={[-Math.PI / 2 + tumble * 0.8, tumble * -0.6, -0.2 + tumble * 1.2]}
 		>
 			<mesh castShadow receiveShadow geometry={base}>
@@ -271,26 +270,26 @@ const Table: React.FC = () => {
 const ObjectsStage: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {width, height} = useVideoConfig();
-	const camX = interpolate(frame, [0, 45], [-1.0, 1.0], {
+	const camX = interpolate(frame, [0, 45], [-1.3, 1.3], {
 		easing: Easing.inOut(Easing.sin),
 	});
-	const camY = interpolate(frame, [0, 45], [7.6, 7.1]);
+	const camY = interpolate(frame, [0, 45], [14.5, 13.6]);
 	return (
 		<ThreeCanvas
 			width={width}
 			height={height}
-			shadows="soft"
-			camera={{fov: 32, position: [0, 7.4, 3.6], near: 0.1, far: 100}}
+			shadows
+			camera={{fov: 30, position: [0, 14.5, 1.2], near: 0.1, far: 100}}
 			gl={{antialias: true, preserveDrawingBuffer: true}}
 		>
-			<color attach="background" args={['#F2F2F3']} />
+			<color attach="background" args={['#ECECEE']} />
 			<Environment />
 			<CameraRig x={camX} height={camY} />
-			<ambientLight intensity={0.3} />
-			<hemisphereLight args={['#ffffff', '#d9dde4', 0.5]} />
+			<ambientLight intensity={0.12} />
+			<hemisphereLight args={['#ffffff', '#d9dde4', 0.25]} />
 			<directionalLight
-				position={[2.5, 9, 4]}
-				intensity={2.3}
+				position={[-4, 9, -4.5]}
+				intensity={3.2}
 				castShadow
 				shadow-mapSize={[2048, 2048]}
 				shadow-camera-left={-7}
@@ -299,7 +298,7 @@ const ObjectsStage: React.FC = () => {
 				shadow-camera-bottom={-7}
 				shadow-bias={-0.0004}
 				shadow-normalBias={0.02}
-				shadow-radius={6}
+				shadow-radius={3}
 			/>
 			<directionalLight position={[-6, 4, -3]} intensity={0.7} color="#dfe8ff" />
 			<pointLight position={[-1, 3, 2]} intensity={14} distance={10} color="#ffffff" />
@@ -322,7 +321,7 @@ export const ObjectsScene: React.FC<{durationInFrames: number}> = ({
 		background={<LightBackdrop />}
 	>
 		<ObjectsStage />
-		<TiltShift amount={5} band={24} />
+		<TiltShift amount={3} band={18} />
 		<Vignette strength={0.18} />
 	</Shot>
 );

@@ -97,10 +97,14 @@ const Stat: React.FC<{label: string; children: React.ReactNode; strong?: boolean
 const ProfileCard: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
-	const rise = spring({frame, fps, config: {damping: 17, stiffness: 120, mass: 0.9}});
-	const countP = interpolate(frame, [6, 32], [0, 1], {...clamp, easing: Easing.bezier(0.12, 0.9, 0.25, 1)});
-	const speed = interpolate(frame, [6, 12, 32], [1, 1, 0], clamp);
-	const sheen = interpolate(frame, [4, 36], [-40, 150], clamp);
+	// Icon pops in at screen centre, then morphs open into the full card.
+	const pop = spring({frame, fps, config: {damping: 13, stiffness: 220, mass: 0.6}});
+	const m = spring({frame: frame - 7, fps, config: {damping: 20, stiffness: 150, mass: 0.8}});
+	const countP = interpolate(frame, [13, 36], [0, 1], {...clamp, easing: Easing.bezier(0.12, 0.9, 0.25, 1)});
+	const speed = interpolate(frame, [13, 18, 36], [1, 1, 0], clamp);
+	const sheen = interpolate(frame, [10, 40], [-40, 150], clamp);
+	const reveal = interpolate(m, [0.55, 1], [0, 1], clamp);
+	const k = 1 - m;
 
 	return (
 		<AbsoluteFill style={{perspective: 1600, justifyContent: 'center', alignItems: 'center'}}>
@@ -112,13 +116,17 @@ const ProfileCard: React.FC = () => {
 					position: 'relative',
 					overflow: 'hidden',
 					fontFamily: FONT,
-					background: 'linear-gradient(160deg, rgba(255,255,255,0.82), rgba(255,255,255,0.55))',
+					background: 'linear-gradient(160deg, rgba(255,255,255,0.92), rgba(250,250,252,0.78))',
 					backdropFilter: 'blur(30px) saturate(1.6)',
 					border: '1.5px solid rgba(255,255,255,0.95)',
 					boxShadow:
 						'0 60px 120px rgba(30,30,60,0.28), 0 10px 30px rgba(30,30,60,0.12), inset 0 1px 0 rgba(255,255,255,1)',
-					translate: `0px ${interpolate(rise, [0, 1], [700, 0])}px`,
-					transform: `rotateX(${interpolate(rise, [0, 1], [32, 0])}deg) rotateY(${interpolate(frame, [0, 45], [4, -3])}deg)`,
+					// Avatar centre sits ~(-274, -373)px from the card centre: start with it at screen centre.
+					translate: `${274 * k}px ${373 * k}px`,
+					scale: String(interpolate(pop, [0, 1], [0.3, 1])),
+					opacity: interpolate(frame, [0, 3], [0, 1], clamp),
+					clipPath: `inset(${30 * k}px ${582 * k}px calc((100% - 174px) * ${k}) ${34 * k}px round ${interpolate(m, [0, 1], [44, 48])}px)`,
+					transform: `rotateY(${interpolate(frame, [0, 45], [3, -2])}deg)`,
 				}}
 			>
 				{/* header */}
@@ -142,12 +150,13 @@ const ProfileCard: React.FC = () => {
 							}}
 						/>
 					</div>
-					<div style={{flex: 1}}>
+					<div style={{flex: 1, opacity: reveal}}>
 						<div style={{fontWeight: 800, fontSize: 42, letterSpacing: '-0.03em', color: COLORS.ink}}>Leiluna Studio</div>
 						<div style={{fontWeight: 500, fontSize: 24, color: COLORS.muted, marginTop: 2}}>@leilunastudio</div>
 					</div>
 					<div
 						style={{
+							opacity: reveal,
 							padding: '14px 30px',
 							borderRadius: 999,
 							background: COLORS.coral,
@@ -161,7 +170,7 @@ const ProfileCard: React.FC = () => {
 					</div>
 				</div>
 				{/* stats */}
-				<div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', margin: '40px 0 34px'}}>
+				<div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', margin: '40px 0 34px', opacity: reveal}}>
 					<Stat label="Posts">482</Stat>
 					<Stat label="Followers" strong>
 						<Odometer value={countP * 306} digits={3} fontSize={64} speed={speed} />
@@ -172,7 +181,7 @@ const ProfileCard: React.FC = () => {
 				{/* grid */}
 				<div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12}}>
 					{[0, 1, 2, 3, 4, 5].map((i) => (
-						<Tile key={i} i={i} start={12 + i * 3} />
+						<Tile key={i} i={i} start={18 + i * 3} />
 					))}
 				</div>
 				{/* glass reflection sweep */}

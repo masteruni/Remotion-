@@ -20,7 +20,7 @@ const VECTORS: Record<Whip, [number, number]> = {
 
 const ENTER_FRAMES = 7;
 const EXIT_FRAMES = 5;
-const MAX_BLUR = 48;
+const MAX_BLUR = 40;
 
 /**
  * One shot of the edit. Handles the whip-pan cut in and out:
@@ -57,7 +57,7 @@ export const Shot: React.FC<{
 			)
 		: 0;
 
-	const dist = width * 0.45;
+	const dist = width * 0.22;
 	const [ex, ey] = enter ? VECTORS[enter] : [0, 0];
 	const [xx, xy] = exit ? VECTORS[exit] : [0, 0];
 	const tx = -ex * enterP * dist + xx * exitP * dist;
@@ -90,7 +90,11 @@ export const Shot: React.FC<{
 			<DirectionalBlur
 				x={bx}
 				y={by}
-				style={{translate: `${tx}px ${ty}px`, scale: String(scale)}}
+				style={{
+					translate: `${tx}px ${ty}px`,
+					scale: String(scale),
+					opacity: 1 - Math.max(enterP, exitP) * 0.55,
+				}}
 			>
 				{children}
 			</DirectionalBlur>

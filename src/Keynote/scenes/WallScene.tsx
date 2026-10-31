@@ -20,8 +20,8 @@ const W = 230;
 const H = (W * 16) / 9;
 const GAP = 30;
 const HERO = {col: 5, row: 3};
-const TILT_X = 34;
-const TILT_Z = -12;
+const TILT_X = 12;
+const TILT_Z = -5;
 const LIFT_START = 30;
 
 const Badge: React.FC<{start: number}> = ({start}) => {

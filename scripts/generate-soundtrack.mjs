@@ -369,10 +369,11 @@ whoosh(5.0 + 19 / 30, {pre: 0.18, post: 0.16, lo: 1500, hi: 7500, amp: 0.45, pan
 // 6.5–8s: counter ticks speeding down, tiles pop in
 for (let k = 0; k < 22; k++) {
 	const x = k / 21;
-	const t = 6.5 + 6 / 30 + Math.pow(x, 1.8) * 0.85;
+	const t = 6.5 + 13 / 30 + Math.pow(x, 1.8) * 0.75;
 	click(t, 3600 - x * 800, 0.45, 0.1);
 }
-for (let i = 0; i < 6; i++) pop(6.5 + (12 + i * 3) / 30 + 0.02, 480 + i * 70, 0.8, -0.5 + i * 0.2);
+pop(6.5 + 5 / 30, 700, 0.9, 0); // icon pop
+for (let i = 0; i < 6; i++) pop(6.5 + (18 + i * 3) / 30 + 0.02, 480 + i * 70, 0.8, -0.5 + i * 0.2);
 riser(7.1, 0.88);
 
 // 8–10s: bass hit, neon buzz, pad tail
