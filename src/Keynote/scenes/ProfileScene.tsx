@@ -2,82 +2,41 @@ import React from 'react';
 import {
 	AbsoluteFill,
 	Easing,
+	Img,
 	interpolate,
 	spring,
+	staticFile,
 	useCurrentFrame,
 	useVideoConfig,
 } from 'remotion';
 import {LightBackdrop} from '../components/Backdrops';
 import {Odometer} from '../components/Odometer';
 import {Shot} from '../components/Shot';
-import {rand} from '../components/Thumbnail';
+import {thumbSrc} from '../components/Thumbnail';
 import {COLORS, FONT} from '../theme';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
-const TILE_COLORS: [string, string][] = [
-	['#FF5A4E', '#FFB86B'],
-	['#6A5BFF', '#B05BFF'],
-	['#00C2A8', '#2E7BFF'],
-	['#FFCE3A', '#FF6A3D'],
-	['#FF4FA3', '#7A3CFF'],
-	['#16D17A', '#00A3FF'],
-];
-
-const Orbs: React.FC = () => {
-	const frame = useCurrentFrame();
-	const orbs = [
-		{x: 520, y: 300, s: 520, c: 'rgba(255,90,78,0.55)'},
-		{x: 1450, y: 760, s: 620, c: 'rgba(122,92,255,0.45)'},
-		{x: 1350, y: 200, s: 420, c: 'rgba(0,194,168,0.40)'},
-	];
-	return (
-		<AbsoluteFill style={{filter: 'blur(70px)'}}>
-			{orbs.map((o, i) => (
-				<div
-					key={i}
-					style={{
-						position: 'absolute',
-						left: o.x - o.s / 2 + Math.sin(frame / 20 + i) * 30,
-						top: o.y - o.s / 2,
-						width: o.s,
-						height: o.s,
-						borderRadius: '50%',
-						background: o.c,
-					}}
-				/>
-			))}
-		</AbsoluteFill>
-	);
-};
+const TILE_IMAGES = ['41858-a', '51500-a', '10419-a', '4064-b', '4149-a', '44001-a'];
 
 const Tile: React.FC<{i: number; start: number}> = ({i, start}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
-	const s = spring({frame: frame - start, fps, config: {damping: 12, stiffness: 260, mass: 0.5}});
-	const [a, b] = TILE_COLORS[i % TILE_COLORS.length];
+	const s = spring({frame: frame - start, fps, config: {damping: 14, stiffness: 240, mass: 0.5}});
 	return (
-		<div
-			style={{
-				aspectRatio: '3 / 4',
-				borderRadius: 18,
-				background: 'rgba(0,0,0,0.06)',
-				overflow: 'hidden',
-				position: 'relative',
-			}}
-		>
+		<div style={{aspectRatio: '3 / 4', borderRadius: 14, background: '#EDEDF0', overflow: 'hidden', position: 'relative'}}>
 			<div
 				style={{
 					position: 'absolute',
 					inset: 0,
-					borderRadius: 18,
-					background: `linear-gradient(${140 + rand(i) * 80}deg, ${a}, ${b})`,
-					scale: String(interpolate(s, [0, 1], [0.4, 1])),
-					opacity: interpolate(frame, [start, start + 2], [0, 1], clamp),
+					borderRadius: 14,
+					overflow: 'hidden',
+					scale: String(interpolate(s, [0, 1], [0.6, 1])),
+					opacity: interpolate(frame, [start, start + 3], [0, 1], clamp),
 				}}
 			>
-				<div style={{position: 'absolute', left: '30%', top: '28%', width: '40%', height: '40%', borderRadius: '50%', background: 'rgba(255,255,255,0.35)'}} />
-				<svg width={22} height={22} viewBox="0 0 10 10" style={{position: 'absolute', left: 12, bottom: 12}}>
+				<Img src={thumbSrc(TILE_IMAGES[i])} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+				<svg width={20} height={20} viewBox="0 0 10 10" style={{position: 'absolute', left: 10, bottom: 10, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))'}}>
 					<path d="M2 1 L9 5 L2 9Z" fill="#fff" />
 				</svg>
 			</div>
@@ -116,7 +75,7 @@ const ProfileCard: React.FC = () => {
 					position: 'relative',
 					overflow: 'hidden',
 					fontFamily: FONT,
-					background: 'linear-gradient(160deg, rgba(255,255,255,0.92), rgba(250,250,252,0.78))',
+					background: '#FFFFFF',
 					backdropFilter: 'blur(30px) saturate(1.6)',
 					border: '1.5px solid rgba(255,255,255,0.95)',
 					boxShadow:
@@ -137,18 +96,28 @@ const ProfileCard: React.FC = () => {
 							height: 116,
 							borderRadius: '50%',
 							padding: 5,
-							background: `conic-gradient(from 200deg, ${COLORS.coral}, #FFB86B, #B05BFF, ${COLORS.coral})`,
+							background: 'linear-gradient(135deg, #FF7199, #FFC2D3)',
 						}}
 					>
 						<div
 							style={{
+								position: 'relative',
 								width: '100%',
 								height: '100%',
 								borderRadius: '50%',
 								border: '4px solid #fff',
-								background: 'radial-gradient(circle at 35% 30%, #FFD3C9, #FF7A6E 55%, #7A3CFF)',
+								background: 'radial-gradient(circle at 50% 40%, #1A2556, #0A1230)',
+								overflow: 'hidden',
 							}}
-						/>
+						>
+							{['crescent-white', 'crescent-pink'].map((n) => (
+								<Img
+									key={n}
+									src={staticFile(`brand/${n}.png`)}
+									style={{position: 'absolute', left: '50%', top: '52%', width: '78%', translate: '-50% -50%'}}
+								/>
+							))}
+						</div>
 					</div>
 					<div style={{flex: 1, opacity: reveal}}>
 						<div style={{fontWeight: 800, fontSize: 42, letterSpacing: '-0.03em', color: COLORS.ink}}>Leiluna Studio</div>
@@ -207,7 +176,6 @@ export const ProfileScene: React.FC<{durationInFrames: number}> = ({durationInFr
 		background={
 			<>
 				<LightBackdrop />
-				<Orbs />
 			</>
 		}
 	>

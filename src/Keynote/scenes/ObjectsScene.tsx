@@ -12,7 +12,6 @@ import * as THREE from 'three';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
 import {LightBackdrop, TiltShift, Vignette} from '../components/Backdrops';
 import {Shot} from '../components/Shot';
-import {COLORS} from '../theme';
 
 /** Studio reflection map, shared by the scene and by materials that need extra reflection. */
 const useRoomEnv = () => {
@@ -20,6 +19,30 @@ const useRoomEnv = () => {
 	return useMemo(() => {
 		const pmrem = new THREE.PMREMGenerator(gl);
 		const tex = pmrem.fromScene(new RoomEnvironment(), 0.03).texture;
+		pmrem.dispose();
+		return tex;
+	}, [gl]);
+};
+
+/** Studio env with a bright softbox and coloured panels: gives chrome something to reflect. */
+const useStudioEnv = () => {
+	const gl = useThree((s) => s.gl);
+	return useMemo(() => {
+		const room = new RoomEnvironment();
+		const panel = (color: string, intensity: number, pos: [number, number, number], size: [number, number]) => {
+			const m = new THREE.Mesh(
+				new THREE.PlaneGeometry(size[0], size[1]),
+				new THREE.MeshBasicMaterial({color: new THREE.Color(color).multiplyScalar(intensity), side: THREE.DoubleSide}),
+			);
+			m.position.set(...pos);
+			m.lookAt(0, 0, 0);
+			room.add(m);
+		};
+		panel('#ffffff', 12, [0, 9, 0], [8, 8]);
+		panel('#FF5A4E', 6, [-9, 2, 3], [4, 10]);
+		panel('#7FB2FF', 5, [9, 3, -3], [4, 10]);
+		const pmrem = new THREE.PMREMGenerator(gl);
+		const tex = pmrem.fromScene(room, 0.02).texture;
 		pmrem.dispose();
 		return tex;
 	}, [gl]);
@@ -161,7 +184,7 @@ const Lens: React.FC<{start: number}> = ({start}) => {
 const Diamond: React.FC<{start: number}> = ({start}) => {
 	const frame = useCurrentFrame();
 	const {visible, y, tumble} = useDrop(start);
-	const env = useRoomEnv();
+	const env = useStudioEnv();
 	const geometry = useMemo(() => {
 		const pts = [
 			new THREE.Vector2(0, -0.95),
@@ -170,13 +193,13 @@ const Diamond: React.FC<{start: number}> = ({start}) => {
 			new THREE.Vector2(0.46, 0.4),
 			new THREE.Vector2(0, 0.4),
 		];
-		return new THREE.LatheGeometry(pts, 10);
+		return new THREE.LatheGeometry(pts, 16);
 	}, []);
 	return (
 		<group
 			visible={visible}
-			position={[0, y + 0.42, -0.2]}
-			rotation={[Math.PI + 0.18 + tumble, frame * 0.02 + tumble * 2, 0.12]}
+			position={[0, y + 0.72, -0.2]}
+			rotation={[0.42 + tumble, frame * 0.015 + tumble * 2 + 0.4, 0.1]}
 		>
 			<mesh castShadow geometry={geometry}>
 				<meshStandardMaterial
@@ -185,7 +208,7 @@ const Diamond: React.FC<{start: number}> = ({start}) => {
 					roughness={0.02}
 					flatShading
 					envMap={env}
-					envMapIntensity={2.6}
+					envMapIntensity={1.4}
 				/>
 			</mesh>
 		</group>
@@ -210,6 +233,7 @@ const roundedRect = (w: number, h: number, r: number) => {
 
 const PlayButton: React.FC<{start: number}> = ({start}) => {
 	const {visible, y, tumble} = useDrop(start);
+	const env = useRoomEnv();
 	const [base, tri] = useMemo(() => {
 		const b = new THREE.ExtrudeGeometry(roundedRect(1.5, 1.5, 0.42), {
 			depth: 0.28,
@@ -243,11 +267,12 @@ const PlayButton: React.FC<{start: number}> = ({start}) => {
 		>
 			<mesh castShadow receiveShadow geometry={base}>
 				<meshPhysicalMaterial
-					color={COLORS.coral}
-					roughness={0.2}
+					color="#FF3B30"
+					roughness={0.28}
 					clearcoat={1}
-					clearcoatRoughness={0.04}
-					sheen={0.4}
+					clearcoatRoughness={0.06}
+					envMap={env}
+					envMapIntensity={0.45}
 				/>
 			</mesh>
 			<mesh castShadow geometry={tri} position={[0.03, 0, 0.27]}>

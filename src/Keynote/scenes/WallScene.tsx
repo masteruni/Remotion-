@@ -92,8 +92,10 @@ const Wall: React.FC = () => {
 					}}
 				>
 					<Thumbnail
-						seed={isHero ? 0 : seed}
+						seed={seed}
 						width={W}
+						image={isHero ? '2168-a' : undefined}
+						views={isHero ? '9.0M' : undefined}
 						style={
 							isHero
 								? {
