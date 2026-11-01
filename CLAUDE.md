@@ -30,5 +30,10 @@ Add `--browser-executable=/opt/pw-browsers/chromium` to render and still command
 - `ObjectsScene` is real 3D (`@remotion/three`). Rendering it needs WebGL. Use `--gl=swangle` in cloud sessions (no GPU, slow: about 8s a frame). Use the default or `--gl=angle` on a Mac.
 - The footage card uses a royalty-free stock clip (see `public/footage/CREDITS.md`). The hand is keyed and its screen tracked by `scripts/prepare-hand-footage.py`, and `components/StockHandFootage.tsx` puts a vertical video into the screen. Pass `footageSrc` (a path inside `public/`) to use a different, ready-made clip instead.
 - The ending animates the client's logo, split into layers in `public/brand/` (`leiluna-logo.png` is the original lockup).
-- The soundtrack is synthesized: `npm run soundtrack` regenerates `public/audio/keynote-soundtrack.wav`. Its cues are timed to the scene frames, so update them if the timing changes.
+- Audio has two layers:
+  - Music: synthesized beat, bass, pads and sub hit. `npm run soundtrack` regenerates `public/audio/keynote-music.wav`.
+  - Sound effects: Pixabay samples in `public/sfx/` (sources and licenses in `public/sfx/CREDITS.md`), placed by `src/Keynote/Sfx.tsx`. Each cue says which frame its peak should land on.
+  - Update both if the scene timing changes. `scripts/prepare-sfx.py` re-trims and normalizes the samples.
+- Only use sound effects and footage with a verified commercial-use license (Pixabay Content License, Mixkit Free License). The FASTEDITOR pack has no license and contains copyrighted game audio.
+- Rendering in a cloud session: add `--concurrency=1 --timeout=120000`. Software WebGL in parallel tabs sometimes freezes on the 3D shot.
 - 4K: add `--scale=2` to the render command.

@@ -3,6 +3,7 @@ import React from 'react';
 import {AbsoluteFill, Series, staticFile, useVideoConfig} from 'remotion';
 import {z} from 'zod';
 import {Grain} from './components/Grain';
+import {Sfx} from './Sfx';
 import {CardScene} from './scenes/CardScene';
 import {LogoScene} from './scenes/LogoScene';
 import {ObjectsScene} from './scenes/ObjectsScene';
@@ -43,7 +44,12 @@ export const Keynote: React.FC<z.infer<typeof keynoteSchema>> = ({footageSrc, so
 				</Series.Sequence>
 			</Series>
 			<Grain />
-			{soundtrack ? <Audio src={staticFile('audio/keynote-soundtrack.wav')} /> : null}
+			{soundtrack ? (
+				<>
+					<Audio src={staticFile('audio/keynote-music.wav')} volume={0.8} />
+					<Sfx />
+				</>
+			) : null}
 		</AbsoluteFill>
 	);
 };

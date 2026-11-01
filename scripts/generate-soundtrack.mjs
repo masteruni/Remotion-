@@ -1,12 +1,15 @@
 // Synthesizes the 10s keynote soundtrack (beat, whooshes, UI clicks, final bass hit)
 // and writes public/audio/keynote-soundtrack.wav. No samples or external assets.
-// Usage: node scripts/generate-soundtrack.mjs
+// Usage: node scripts/generate-soundtrack.mjs [--music-only]
 import {mkdirSync, writeFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const SR = 44100;
 const LENGTH = 10;
+// --music-only: beat, bass, pads, sub hit and object thuds only. The UI/transition
+// sound effects then come from the sample cues in src/Keynote/Sfx.tsx.
+const MUSIC_ONLY = process.argv.includes('--music-only');
 const N = SR * LENGTH;
 const L = new Float32Array(N);
 const R = new Float32Array(N);
@@ -176,6 +179,7 @@ const pad = (t0, midis, dur) => {
 
 /** Filtered-noise whoosh that swells into `peak` and tails off after it. */
 const whoosh = (peak, {pre = 0.32, post = 0.22, lo = 250, hi = 5200, pan = [-0.7, 0.7], amp = 1} = {}) => {
+	if (MUSIC_ONLY) return;
 	const f = svf();
 	const dur = pre + post;
 	voice(
@@ -204,6 +208,7 @@ const whoosh = (peak, {pre = 0.32, post = 0.22, lo = 250, hi = 5200, pan = [-0.7
 };
 
 const click = (t0, freq = 3200, amp = 1, pan = 0) => {
+	if (MUSIC_ONLY) return;
 	voice(
 		t0,
 		0.05,
@@ -213,6 +218,7 @@ const click = (t0, freq = 3200, amp = 1, pan = 0) => {
 };
 
 const pop = (t0, base = 520, amp = 1, pan = 0) => {
+	if (MUSIC_ONLY) return;
 	let ph = 0;
 	voice(
 		t0,
@@ -253,6 +259,7 @@ const chime = (t0, midi, amp = 1, pan = 0) => {
 };
 
 const riser = (t0, dur) => {
+	if (MUSIC_ONLY) return;
 	const f = svf();
 	let ph = 0;
 	voice(
@@ -292,6 +299,7 @@ const impact = (t0) => {
 
 /** Short electrical buzz for the neon flicker. */
 const buzz = (t0, dur, amp = 1) => {
+	if (MUSIC_ONLY) return;
 	const f = svf();
 	voice(
 		t0,
@@ -453,7 +461,7 @@ header.writeUInt16LE(16, 34);
 header.write('data', 36);
 header.writeUInt32LE(pcm.length, 40);
 
-const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'audio', 'keynote-soundtrack.wav');
+const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'audio', MUSIC_ONLY ? 'keynote-music.wav' : 'keynote-soundtrack.wav');
 mkdirSync(dirname(out), {recursive: true});
 writeFileSync(out, Buffer.concat([header, pcm]));
 console.log(`Wrote ${out} (${LENGTH}s, ${SR} Hz stereo)`);
