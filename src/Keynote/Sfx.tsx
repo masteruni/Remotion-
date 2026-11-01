@@ -9,7 +9,7 @@ import {Sequence, staticFile, useVideoConfig} from 'remotion';
  * at:   the event, in frames from the start of the video
  * peak: seconds into the file where the sound peaks (prepared by scripts/prepare-sfx.py)
  */
-type Cue = {file: string; at: number; peak: number; volume: number};
+export type Cue = {file: string; at: number; peak: number; volume: number};
 
 const CUT_1 = 45; // title -> objects
 const CUT_2 = 90; // objects -> wall
@@ -48,11 +48,12 @@ const CUES: Cue[] = [
 	{file: 'swoosh', at: LOGO + 22, peak: 0.29, volume: 0.25},
 ];
 
-export const Sfx: React.FC = () => {
+/** Plays a list of cues; each cue peaks on its `at` frame. Reused by other compositions. */
+export const SfxTrack: React.FC<{cues: Cue[]}> = ({cues}) => {
 	const {fps} = useVideoConfig();
 	return (
 		<>
-			{CUES.map((cue, i) => {
+			{cues.map((cue, i) => {
 				const from = cue.at - Math.round(cue.peak * fps);
 				// A cue that would start before frame 0 is trimmed instead.
 				const trimBefore = from < 0 ? -from : 0;
@@ -65,3 +66,5 @@ export const Sfx: React.FC = () => {
 		</>
 	);
 };
+
+export const Sfx: React.FC = () => <SfxTrack cues={CUES} />;

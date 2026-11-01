@@ -37,3 +37,9 @@ Add `--browser-executable=/opt/pw-browsers/chromium` to render and still command
 - Only use sound effects and footage with a verified commercial-use license (Pixabay Content License, Mixkit Free License). The FASTEDITOR pack has no license and contains copyrighted game audio.
 - Rendering in a cloud session: add `--concurrency=1 --timeout=120000`. Software WebGL in parallel tabs sometimes freezes on the 3D shot.
 - 4K: add `--scale=2` to the render command.
+
+## LeilunaSitePromo (12s, 1080x1920 vertical, 30fps)
+- Promo for leilunastudio.com, in the style of a dark product-UI fly-through. All copy and numbers come from the live site.
+- `src/Promo/Promo.tsx` runs five shots (lengths in `src/Promo/theme.ts`): format picker, services list expanding into results, contact input, kinetic headline lines, logo lockup with the URL.
+- Reuses the keynote's thumbnails, brand layers and sound-effect files. Cues are in `src/Promo/sfx.ts`. Music: `node scripts/generate-soundtrack.mjs --music-only --plain --length=12 --drop=9.5 --out=promo-music.wav`.
+- No WebGL, so it renders fast: `npx remotion render LeilunaSitePromo out/leiluna-site-promo.mp4 --concurrency=3`.

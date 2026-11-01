@@ -6,7 +6,14 @@ import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const SR = 44100;
-const LENGTH = 10;
+const arg = (name, fallback) => {
+	const a = process.argv.find((x) => x.startsWith(`--${name}=`));
+	return a ? a.split('=')[1] : fallback;
+};
+// --length=S --drop=S --out=FILE.wav --plain: reuse the same arrangement for other videos.
+// --plain skips the keynote-specific object thuds and chimes.
+const LENGTH = Number(arg('length', 10));
+const PLAIN = process.argv.includes('--plain');
 // --music-only: beat, bass, pads, sub hit and object thuds only. The UI/transition
 // sound effects then come from the sample cues in src/Keynote/Sfx.tsx.
 const MUSIC_ONLY = process.argv.includes('--music-only');
@@ -27,7 +34,7 @@ const noise = () => {
 const BPM = 120;
 const BEAT = 60 / BPM; // 0.5s: every cut (1.5, 3, 5, 6.5, 8) lands on a beat
 const CUTS = [1.5, 3.0, 5.0, 6.5, 8.0];
-const DROP = 8.0;
+const DROP = Number(arg('drop', 8.0));
 
 const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
 
@@ -338,9 +345,9 @@ for (let b = 0; b < DROP / BEAT; b++) {
 	if (!inFinalBreak) bass(t + BEAT / 2, BASS_NOTES[bar % 4], BEAT * 0.45);
 }
 
-for (let bar = 0; bar < 4; bar++) {
+for (let bar = 0; bar * 2 < DROP; bar++) {
 	const t = bar * 2;
-	const chord = CHORDS[bar];
+	const chord = CHORDS[bar % 4];
 	stab(t, chord, 0.16, 1);
 	stab(t + 0.75, chord, 0.12, 0.7);
 	if (t + 1.5 < DROP - BEAT) stab(t + 1.5, chord, 0.14, 0.8);
@@ -359,17 +366,17 @@ whoosh(14 / 30 + 0.04, {pre: 0.1, post: 0.12, lo: 900, hi: 6000, amp: 0.6});
 pop(14 / 30 + 0.03, 640, 1.1, 0.15);
 
 // 1.5–3s: objects land
-thud(1.5 + 4 / 30 + 0.21, 1, -0.4);
+if (!PLAIN) thud(1.5 + 4 / 30 + 0.21, 1, -0.4);
 click(1.5 + 4 / 30 + 0.22, 1800, 0.5, -0.4);
-thud(1.5 + 10 / 30 + 0.21, 0.8, 0);
-chime(1.5 + 10 / 30 + 0.22, 93, 1, 0);
-thud(1.5 + 16 / 30 + 0.21, 0.9, 0.4);
+if (!PLAIN) thud(1.5 + 10 / 30 + 0.21, 0.8, 0);
+if (!PLAIN) chime(1.5 + 10 / 30 + 0.22, 93, 1, 0);
+if (!PLAIN) thud(1.5 + 16 / 30 + 0.21, 0.9, 0.4);
 click(1.5 + 16 / 30 + 0.22, 2200, 0.6, 0.4);
 
 // 3–5s: hero thumbnail lifts, badge pops
 riser(3.0 + 26 / 30, 0.35);
 pop(3.0 + 38 / 30 + 0.03, 760, 1.2, 0);
-chime(3.0 + 38 / 30 + 0.03, 88, 0.8, 0.2);
+if (!PLAIN) chime(3.0 + 38 / 30 + 0.03, 88, 0.8, 0.2);
 
 // 5–6.5s: thumb scroll swipe
 whoosh(5.0 + 19 / 30, {pre: 0.18, post: 0.16, lo: 1500, hi: 7500, amp: 0.45, pan: [0.2, -0.2]});
@@ -397,8 +404,8 @@ buzz(DROP + 16 / 30, 0.05, 0.9);
 // Wordmark wipe
 whoosh(DROP + 22 / 30, {pre: 0.22, post: 0.2, lo: 1200, hi: 8000, pan: [-0.4, 0.4], amp: 0.4});
 pad(DROP, [45, 52, 55, 59, 60, 64], LENGTH - DROP);
-chime(DROP + 11 / 30, 81, 0.9, -0.3);
-chime(DROP + 26 / 30, 88, 0.7, 0.3);
+if (!PLAIN) chime(DROP + 11 / 30, 81, 0.9, -0.3);
+if (!PLAIN) chime(DROP + 26 / 30, 88, 0.7, 0.3);
 
 // ---------- Reverb (Schroeder) on the send bus ----------
 
@@ -461,7 +468,7 @@ header.writeUInt16LE(16, 34);
 header.write('data', 36);
 header.writeUInt32LE(pcm.length, 40);
 
-const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'audio', MUSIC_ONLY ? 'keynote-music.wav' : 'keynote-soundtrack.wav');
+const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'audio', arg('out', MUSIC_ONLY ? 'keynote-music.wav' : 'keynote-soundtrack.wav'));
 mkdirSync(dirname(out), {recursive: true});
 writeFileSync(out, Buffer.concat([header, pcm]));
 console.log(`Wrote ${out} (${LENGTH}s, ${SR} Hz stereo)`);

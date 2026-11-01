@@ -4,6 +4,7 @@ import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
 import { Keynote, keynoteSchema } from "./Keynote/Keynote";
 import { TOTAL_SECONDS } from "./Keynote/theme";
+import { Promo, PROMO_FRAMES } from "./Promo/Promo";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -22,6 +23,14 @@ export const RemotionRoot: React.FC = () => {
           footageSrc: "",
           soundtrack: true,
         }}
+      />
+      <Composition
+        id="LeilunaSitePromo"
+        component={Promo}
+        durationInFrames={PROMO_FRAMES}
+        fps={30}
+        width={1080}
+        height={1920}
       />
       <Folder name="Elements">
         <Composition
