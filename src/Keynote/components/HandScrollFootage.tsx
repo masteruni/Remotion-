@@ -9,19 +9,19 @@ const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const SCREEN_W = 268;
 const SCREEN_H = 580;
 
-const FeedVideo: React.FC<{colors: [string, string, string]; seed: number}> = ({colors, seed}) => {
+export const FeedVideo: React.FC<{colors: [string, string, string]; seed: number; width?: number; height?: number}> = ({colors, seed, width = SCREEN_W, height = SCREEN_H}) => {
 	const frame = useCurrentFrame();
 	return (
 		<div
 			style={{
 				position: 'relative',
-				width: SCREEN_W,
-				height: SCREEN_H,
+				width,
+				height,
 				overflow: 'hidden',
 				background: `linear-gradient(170deg, ${colors[0]}, ${colors[1]})`,
 			}}
 		>
-			<svg viewBox="0 0 268 580" style={{position: 'absolute', inset: 0}}>
+			<svg viewBox="0 0 268 580" preserveAspectRatio="xMidYMid slice" style={{position: 'absolute', inset: 0, width: '100%', height: '100%'}}>
 				<circle cx={134 + Math.sin(frame / 9 + seed) * 20} cy={230} r={70} fill={colors[2]} opacity={0.9} />
 				<path
 					d={`M${-40 - (frame * 3) % 80} 360 q 40 -26 80 0 t 80 0 t 80 0 t 80 0 t 80 0 V580 H-80Z`}
@@ -49,7 +49,7 @@ const FeedVideo: React.FC<{colors: [string, string, string]; seed: number}> = ({
 	);
 };
 
-const Bokeh: React.FC = () => {
+export const Bokeh: React.FC = () => {
 	const frame = useCurrentFrame();
 	return (
 		<AbsoluteFill style={{filter: 'blur(16px)'}}>

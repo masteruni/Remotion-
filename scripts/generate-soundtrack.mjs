@@ -378,13 +378,19 @@ riser(7.1, 0.88);
 
 // 8–10s: bass hit, neon buzz, pad tail
 impact(DROP);
-buzz(DROP + 1 / 30, 0.03);
-buzz(DROP + 3 / 30, 0.02, 0.8);
-buzz(DROP + 6 / 30, 0.06, 1);
-buzz(DROP + 8 / 30, 0.05, 0.7);
+// Logo: two crescents orbit in from opposite sides and lock at frame 11.
+whoosh(DROP + 11 / 30, {pre: 0.3, post: 0.25, lo: 400, hi: 6500, pan: [-0.8, 0.8], amp: 0.8});
+whoosh(DROP + 12 / 30, {pre: 0.28, post: 0.25, lo: 500, hi: 7000, pan: [0.8, -0.8], amp: 0.7});
+pop(DROP + 11 / 30, 420, 1.1, 0);
+// Glow flicker as they lock
+buzz(DROP + 12 / 30, 0.03);
+buzz(DROP + 14 / 30, 0.02, 0.8);
+buzz(DROP + 16 / 30, 0.05, 0.9);
+// Wordmark wipe
+whoosh(DROP + 22 / 30, {pre: 0.22, post: 0.2, lo: 1200, hi: 8000, pan: [-0.4, 0.4], amp: 0.4});
 pad(DROP, [45, 52, 55, 59, 60, 64], LENGTH - DROP);
-chime(DROP + 0.6, 81, 0.9, -0.3);
-chime(DROP + 0.85, 88, 0.7, 0.3);
+chime(DROP + 11 / 30, 81, 0.9, -0.3);
+chime(DROP + 26 / 30, 88, 0.7, 0.3);
 
 // ---------- Reverb (Schroeder) on the send bus ----------
 

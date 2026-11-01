@@ -1,82 +1,126 @@
 import React from 'react';
-import {AbsoluteFill, Easing, interpolate, useCurrentFrame} from 'remotion';
+import {
+	AbsoluteFill,
+	Easing,
+	Img,
+	interpolate,
+	spring,
+	staticFile,
+	useCurrentFrame,
+	useVideoConfig,
+} from 'remotion';
 import {NavyBackdrop, Vignette} from '../components/Backdrops';
 import {Shot} from '../components/Shot';
 import {FONT} from '../theme';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
-// Neon tube flicker, one value per frame, then steady.
-const FLICKER = [0, 0.9, 0.15, 1, 0.05, 0, 0.8, 0.4, 1, 1, 0.7, 1, 1, 0.92, 1];
+// Source art is 563px wide; the crescents layer is 563x479 and the wordmark
+// sits under it, as in the supplied lockup.
+const ART_W = 563;
+const CRESCENT_H = 479;
+const PIVOT = '285px 245px'; // shared centre the two moons orbit around
+const BRAND_PINK = '255,113,153';
 
-const NeonText: React.FC = () => {
+// Glow flicker as the moons lock, one value per frame from LOCK.
+const LOCK = 11;
+const FLICKER = [1.8, 0.5, 1.5, 0.3, 1.2, 1.1, 0.6, 1.3, 1];
+
+/** Rotation of a crescent at a (fractional) frame. */
+const useOrbit = (from: number, delay: number) => {
+	const {fps} = useVideoConfig();
+	return (f: number) =>
+		interpolate(
+			spring({frame: f - delay, fps, config: {damping: 15, stiffness: 140, mass: 0.7}}),
+			[0, 1],
+			[from, 0],
+		);
+};
+
+/** One crescent with true rotational motion blur: shutter samples summed with plus-lighter. */
+const Crescent: React.FC<{src: string; from: number; delay: number}> = ({src, from, delay}) => {
 	const frame = useCurrentFrame();
-	const on = frame < FLICKER.length ? FLICKER[frame] : 1;
-	const aberration = interpolate(frame, [0, 22], [14, 1.6], {
-		...clamp,
-		easing: Easing.out(Easing.cubic),
-	});
-	const bloom = interpolate(frame, [0, 10, 30], [1.6, 1.25, 1], clamp);
-
-	const base: React.CSSProperties = {
-		fontFamily: FONT,
-		fontStyle: 'italic',
-		fontWeight: 800,
-		fontSize: 128,
-		letterSpacing: '-0.035em',
-		whiteSpace: 'nowrap',
-		lineHeight: 1,
-		paddingRight: '0.08em',
-	};
-
+	const rot = useOrbit(from, delay);
+	const SAMPLES = 6;
+	const SHUTTER = 0.6;
+	const opacity = interpolate(frame, [delay, delay + 4], [0, 1], clamp);
 	return (
-		<div style={{position: 'relative', opacity: on}}>
-			{/* chromatic aberration fringes */}
-			<div style={{...base, position: 'absolute', inset: 0, color: 'rgba(255,40,80,0.75)', translate: `${-aberration}px 0px`, mixBlendMode: 'screen'}}>
-				Leiluna Studio
-			</div>
-			<div style={{...base, position: 'absolute', inset: 0, color: 'rgba(40,220,255,0.6)', translate: `${aberration}px 0px`, mixBlendMode: 'screen'}}>
-				Leiluna Studio
-			</div>
-			{/* tube core + bloom */}
-			<div
-				style={{
-					...base,
-					position: 'relative',
-					color: '#FFE3DC',
-					textShadow: [
-						`0 0 ${6 * bloom}px #FF9C8F`,
-						`0 0 ${18 * bloom}px #FF6F61`,
-						`0 0 ${42 * bloom}px rgba(255,90,78,0.9)`,
-						`0 0 ${90 * bloom}px rgba(255,90,78,0.6)`,
-						`0 0 ${160 * bloom}px rgba(255,90,78,0.35)`,
-					].join(', '),
-				}}
-			>
-				Leiluna Studio
-			</div>
+		<div style={{position: 'absolute', inset: 0, opacity}}>
+			{new Array(SAMPLES).fill(0).map((_, k) => {
+				const t = frame - (k / (SAMPLES - 1)) * SHUTTER;
+				return (
+					<Img
+						key={k}
+						src={src}
+						style={{
+							position: 'absolute',
+							left: 0,
+							top: 0,
+							width: ART_W,
+							height: CRESCENT_H,
+							transformOrigin: PIVOT,
+							rotate: `${rot(t)}deg`,
+							scale: String(1 - 0.3 * (rot(t) / from)),
+							opacity: 1 / SAMPLES,
+							mixBlendMode: 'plus-lighter',
+						}}
+					/>
+				);
+			})}
 		</div>
 	);
 };
 
-const Flare: React.FC = () => {
+const Moons: React.FC = () => {
 	const frame = useCurrentFrame();
+	const glow =
+		frame < LOCK
+			? interpolate(frame, [0, LOCK], [0.3, 1], clamp)
+			: frame < LOCK + FLICKER.length
+				? FLICKER[frame - LOCK]
+				: 1;
 	return (
 		<div
 			style={{
-				position: 'absolute',
-				left: '50%',
-				top: '50%',
-				width: 1700,
-				height: 6,
-				translate: '-50% -60px',
-				borderRadius: 99,
-				background:
-					'linear-gradient(90deg, rgba(255,110,97,0), rgba(255,140,128,0.9) 50%, rgba(255,110,97,0))',
-				filter: 'blur(3px)',
-				opacity: interpolate(frame, [0, 4, 30], [0, 0.9, 0.18], clamp),
+				position: 'relative',
+				width: ART_W,
+				height: CRESCENT_H,
+				filter: `drop-shadow(0 0 ${18 * glow}px rgba(${BRAND_PINK},${0.55 * glow})) drop-shadow(0 0 ${60 * glow}px rgba(${BRAND_PINK},${0.35 * glow}))`,
 			}}
-		/>
+		>
+			<Crescent src={staticFile('brand/crescent-white.png')} from={-160} delay={0} />
+			<Crescent src={staticFile('brand/crescent-pink.png')} from={150} delay={2} />
+		</div>
+	);
+};
+
+const Wordmark: React.FC = () => {
+	const frame = useCurrentFrame();
+	const wipe = interpolate(frame, [15, 29], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+	const studio = interpolate(frame, [24, 38], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+	const mask = `linear-gradient(90deg, black ${wipe * 130 - 30}%, transparent ${wipe * 130}%)`;
+	return (
+		<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 22}}>
+			<Img
+				src={staticFile('brand/wordmark-leiluna.png')}
+				style={{
+					width: ART_W,
+					maskImage: mask,
+					WebkitMaskImage: mask,
+					filter: `blur(${(1 - wipe) * 10}px)`,
+					translate: `0px ${(1 - wipe) * 18}px`,
+				}}
+			/>
+			<Img
+				src={staticFile('brand/wordmark-studio.png')}
+				style={{
+					width: ART_W,
+					opacity: studio,
+					scale: `${interpolate(studio, [0, 1], [1.25, 1])} 1`,
+					filter: `blur(${(1 - studio) * 8}px)`,
+				}}
+			/>
+		</div>
 	);
 };
 
@@ -87,28 +131,43 @@ const Lockup: React.FC = () => {
 			style={{
 				justifyContent: 'center',
 				alignItems: 'center',
-				scale: String(interpolate(frame, [0, 60], [1, 1.08], {...clamp, easing: Easing.out(Easing.quad)})),
+				scale: String(
+					interpolate(frame, [0, 60], [0.78, 0.83], {...clamp, easing: Easing.out(Easing.quad)}),
+				),
 			}}
 		>
-			<Flare />
-			<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40}}>
-				<NeonText />
+			<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+				<Moons />
+				<Wordmark />
 				<div
 					style={{
+						marginTop: 44,
 						fontFamily: FONT,
 						fontWeight: 500,
-						fontSize: 28,
-						letterSpacing: interpolate(frame, [18, 40], [0.5, 0.32], clamp) + 'em',
-						color: '#C9CDD6',
-						opacity: interpolate(frame, [18, 32], [0, 1], clamp),
-						translate: `0px ${interpolate(frame, [18, 34], [12, 0], {...clamp, easing: Easing.out(Easing.cubic)})}px`,
+						fontSize: 34,
+						letterSpacing: interpolate(frame, [34, 52], [0.5, 0.32], clamp) + 'em',
 						marginRight: '-0.32em',
+						color: '#C9CDD6',
+						opacity: interpolate(frame, [34, 46], [0, 1], clamp),
+						translate: `0px ${interpolate(frame, [34, 48], [12, 0], {...clamp, easing: Easing.out(Easing.cubic)})}px`,
 					}}
 				>
 					Video · Design · Strategy
 				</div>
 			</div>
 		</AbsoluteFill>
+	);
+};
+
+const PinkAmbience: React.FC = () => {
+	const frame = useCurrentFrame();
+	return (
+		<AbsoluteFill
+			style={{
+				background: `radial-gradient(ellipse 40% 45% at 50% 38%, rgba(${BRAND_PINK},0.22), rgba(${BRAND_PINK},0) 70%)`,
+				opacity: interpolate(frame, [0, LOCK, LOCK + 10], [0, 1, 0.7], clamp),
+			}}
+		/>
 	);
 };
 
@@ -119,6 +178,7 @@ export const LogoScene: React.FC<{durationInFrames: number}> = ({durationInFrame
 		background={
 			<>
 				<NavyBackdrop />
+				<PinkAmbience />
 				<Vignette strength={0.5} />
 			</>
 		}

@@ -9,7 +9,7 @@ import {
 	useVideoConfig,
 } from 'remotion';
 import {LightBackdrop, Vignette} from '../components/Backdrops';
-import {HandScrollFootage} from '../components/HandScrollFootage';
+import {StockHandFootage} from '../components/StockHandFootage';
 import {Shot} from '../components/Shot';
 
 const CARD_W = 1040;
@@ -63,7 +63,7 @@ const FloatingCard: React.FC<{footageSrc: string}> = ({footageSrc}) => {
 					/>
 				) : (
 					<div style={{width: 1200, height: 675, scale: String(CARD_W / 1200), transformOrigin: '0 0'}}>
-						<HandScrollFootage />
+						<StockHandFootage />
 					</div>
 				)}
 				<div
