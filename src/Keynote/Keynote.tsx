@@ -46,7 +46,7 @@ export const Keynote: React.FC<z.infer<typeof keynoteSchema>> = ({footageSrc, so
 			<Grain />
 			{soundtrack ? (
 				<>
-					<Audio src={staticFile('audio/keynote-music.wav')} volume={0.8} />
+					<Audio src={staticFile('audio/keynote-music.wav')} volume={0.62} />
 					<Sfx />
 				</>
 			) : null}

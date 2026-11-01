@@ -43,7 +43,7 @@ const CUES: Cue[] = [
 		volume: 0.28,
 	})),
 	// Logo: riser into the hit, moons lock with a twinkle, wordmark wipe
-	{file: 'riser-impact', at: LOGO, peak: 2.66, volume: 0.85},
+	{file: 'riser-impact', at: LOGO, peak: 2.66, volume: 0.5},
 	{file: 'magic-twinkle', at: LOGO + 11, peak: 0.16, volume: 0.55},
 	{file: 'swoosh', at: LOGO + 22, peak: 0.29, volume: 0.25},
 ];
