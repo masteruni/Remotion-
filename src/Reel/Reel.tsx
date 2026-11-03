@@ -90,13 +90,15 @@ const zoomAt = (job: ReelJob, t: number) => {
 		if (p.at <= t) z = {scale: p.scale, x: p.x ?? 0.5, y: p.y ?? defaultY};
 	}
 	const r = job.reveal;
-	if (r && t >= r.at) {
+	if (r && t >= r.at && (r.end === undefined || t < r.end)) {
 		const k = interpolate(t, [r.at, r.at + 1.4], [0, 1], {
 			extrapolateRight: 'clamp',
 			easing: Easing.bezier(0.2, 0.8, 0.2, 1),
 		});
 		const drift = Math.max(0, t - r.at - 1.4) * 0.02; // keeps it alive after the push
-		z = {scale: 1.12 + (r.scale - 1.12) * k + drift, x: r.x ?? 0.5, y: r.y ?? 0.45};
+		// start from the zoom we are already at so the push never jumps back out
+		const from = Math.min(Math.max(z.scale, 1.12), r.scale);
+		z = {scale: from + (r.scale - from) * k + drift, x: r.x ?? 0.5, y: r.y ?? 0.45};
 	}
 	return z;
 };

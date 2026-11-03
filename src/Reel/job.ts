@@ -22,12 +22,12 @@ export type ReelJob = {
 	punchIns: {at: number; scale: number; x?: number; y?: number}[];
 	/** White flash cuts (source seconds). */
 	flashes: number[];
-	/** Slow push-in for the payoff (source seconds). */
-	reveal: {at: number; scale: number; x?: number; y?: number} | null;
+	/** Slow push-in for the payoff (source seconds); `end` hands back to punchIns, e.g. on a cut to a replay. */
+	reveal: {at: number; scale: number; x?: number; y?: number; end?: number} | null;
 	/** Meme / reaction cut-ins that replace the picture (src inside public/). */
 	inserts: {at: number; duration: number; src: string; audio?: boolean; volume?: number}[];
 	/** Cover frame: source time, and the point (0..1 of the picture) to centre the full-bleed crop on. */
-	thumbnail: {time: number; x?: number; y?: number; zoom?: number};
+	thumbnail: {time: number; x?: number; y?: number; zoom?: number; offsetY?: number};
 	caption: string;
 };
 

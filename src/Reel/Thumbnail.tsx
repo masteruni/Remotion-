@@ -23,23 +23,37 @@ export const Thumbnail: React.FC<ReelProps> = ({data}) => {
 	// centre on (cx, cy) but never show anything outside the picture
 	const offX = Math.min(0, Math.max(W - c.w * s, W / 2 - cx * c.w * s)) - c.x * s;
 	const offY = Math.min(0, Math.max(H - c.h * s, H / 2 - cy * c.h * s)) - c.y * s;
+	// slide the frame down when the face sits high in the picture; the navy fade covers the gap
+	const shiftY = job.thumbnail.offsetY ?? 0;
 
 	return (
 		<AbsoluteFill style={{background: `rgb(${NAVY})`, fontFamily: FONT, overflow: 'hidden'}}>
-			<OffthreadVideo
-				src={staticFile(job.src)}
-				muted
-				trimBefore={Math.round(job.thumbnail.time * 30)}
+			{/* clip to the picture so another page's template never shows */}
+			<div
 				style={{
 					position: 'absolute',
-					left: offX,
-					top: offY,
-					width: job.width * s,
-					height: job.height * s,
-					maxWidth: 'none',
-					filter: 'saturate(1.05) contrast(1.04)',
+					left: offX + c.x * s,
+					top: offY + shiftY + c.y * s,
+					width: c.w * s,
+					height: c.h * s,
+					overflow: 'hidden',
 				}}
-			/>
+			>
+				<OffthreadVideo
+					src={staticFile(job.src)}
+					muted
+					trimBefore={Math.round(job.thumbnail.time * 30)}
+					style={{
+						position: 'absolute',
+						left: -c.x * s,
+						top: -c.y * s,
+						width: job.width * s,
+						height: job.height * s,
+						maxWidth: 'none',
+						filter: 'saturate(1.05) contrast(1.04)',
+					}}
+				/>
+			</div>
 			<AbsoluteFill
 				style={{
 					background: `linear-gradient(180deg,

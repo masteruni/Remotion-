@@ -40,7 +40,8 @@ The code is in `src/Reel/` (compositions `Reel` and `ReelThumbnail`). The accoun
      at the top and bottom and the big avatar, name, badge and handle lockup. There is no headline text. Choose
      `time` for a strong face close-up or reaction, and avoid frames with burned-in captions near the top (they show
      behind the lockup). Set `x`/`y` (0..1 of the picture) to centre the crop on the face, and use `zoom` (>1) to
-     tighten it.
+     tighten it. If the face sits high in the picture and the lockup would cover it, set `offsetY` (px, ~300–400)
+     to slide the frame down. The navy fade fills the gap. Always render the cover and check the face is clear.
    - `caption`: a hook line, then one line of context, "watch till the end" style retention bait,
      `Follow @theaiedgedaily for daily clips that hit different ⚡`, a credit line `🎥 @<original creator>` when the clip isn't our own (always keep it), `-`, and 5–10 hashtags
      relevant to the clip plus a few broad ones.
