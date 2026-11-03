@@ -5,6 +5,7 @@ import { Title } from "./HelloWorld/Title";
 import { Keynote, keynoteSchema } from "./Keynote/Keynote";
 import { TOTAL_SECONDS } from "./Keynote/theme";
 import { Promo, PROMO_FRAMES } from "./Promo/Promo";
+import { TrainingPost, POST_WIDTH, POST_HEIGHT } from "./MDRaymundo/TrainingPost";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -31,6 +32,14 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
+      />
+      <Composition
+        id="MDRaymundoTrainingPost"
+        component={TrainingPost}
+        durationInFrames={1}
+        fps={30}
+        width={POST_WIDTH}
+        height={POST_HEIGHT}
       />
       <Folder name="Elements">
         <Composition
