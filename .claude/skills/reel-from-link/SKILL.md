@@ -11,7 +11,7 @@ The user sends an Instagram link. You deliver three things in `out/reels/<slug>/
 The look copies the reference reel (instagram.com/reel/DfBgrJXTT0b). It's a black 9:16 frame with an account
 header (avatar, name, verified badge, handle) and a one-line hook. The clip sits in the middle with
 phrase subtitles, hard punch-in zooms on phrases, white flash cuts, and a slow push-in on the payoff.
-The code is in `src/Reel/` (compositions `Reel` and `ReelThumbnail`). The account header comes from `reel.brand.json`.
+The code is in `src/Reel/` (compositions `Reel` and `ReelThumbnail`). The account header comes from `reel.brand.json`. The account is The AI Edge Daily (@theaiedgedaily).
 
 ## Steps
 
@@ -36,10 +36,13 @@ The code is in `src/Reel/` (compositions `Reel` and `ReelThumbnail`). The accoun
 4. **Write the copy.** Write it fresh; never paste the original caption.
    - `headline` (on the video, under the handle): at most about 50 characters. Use a curiosity hook that doesn't
      spoil the payoff. Plain text, no emoji (the renderer has no emoji font).
-   - `thumbnail.text`: 2–5 punchy words. `highlight`: the 1–2 words to colour yellow. Set `thumbnail.time` to
-     a frame that sets up the story without giving away the twist.
+   - `thumbnail`: the cover uses the account's house style, which is one frame of the clip full-bleed with a navy fade
+     at the top and bottom and the big avatar, name, badge and handle lockup. There is no headline text. Choose
+     `time` for a strong face close-up or reaction, and avoid frames with burned-in captions near the top (they show
+     behind the lockup). Set `x`/`y` (0..1 of the picture) to centre the crop on the face, and use `zoom` (>1) to
+     tighten it.
    - `caption`: a hook line, then one line of context, "watch till the end" style retention bait,
-     `Follow <brand handle> ...`, a credit line `🎥 @<original creator>` (always keep it), `-`, and 5–10 hashtags
+     `Follow @theaiedgedaily for daily clips that hit different ⚡`, a credit line `🎥 @<original creator>` when the clip isn't our own (always keep it), `-`, and 5–10 hashtags
      relevant to the clip plus a few broad ones.
 5. **Check:** `npx remotion still Reel out/check.png --frame=<n> --browser-executable=/opt/pw-browsers/chromium`
    on a punch-in frame and the reveal, and look at them.

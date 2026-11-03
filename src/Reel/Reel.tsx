@@ -36,7 +36,7 @@ export const clipBox = (job: ReelJob) => {
 	return {crop: c, clipH, headerTop: top, clipTop: top + HEADER_H};
 };
 
-const Verified: React.FC<{size: number}> = ({size}) => (
+export const Verified: React.FC<{size: number}> = ({size}) => (
 	<svg width={size} height={size} viewBox="0 0 24 24">
 		<path
 			fill="#1D9BF0"
@@ -64,7 +64,7 @@ export const Header: React.FC<{job: ReelJob; top: number}> = ({job, top}) => {
 						overflow: 'hidden',
 					}}
 				>
-					<Img src={staticFile(brand.avatar)} style={{width: '68%', height: '68%', objectFit: 'contain'}} />
+					<Img src={staticFile(brand.avatar)} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
 				</div>
 				<div>
 					<div style={{display: 'flex', alignItems: 'center', gap: 10, fontSize: 42, fontWeight: 700}}>

@@ -256,6 +256,8 @@ def default_headline(info, pages):
 
 def default_caption(headline, info, brand):
     credit = info.get("channel") or info.get("uploader_id")
+    if credit and credit.lower() == brand["handle"].lstrip("@").lower():
+        credit = None  # our own clip
     tags = re.findall(r"#\w+", info.get("description") or "")
     base = ["#reels", "#viral", "#explorepage", "#fyp"]
     seen, out = set(), []
@@ -344,7 +346,7 @@ def main():
         "trim": {"start": 0, "end": round(duration, 3)},
         **plan,
         "inserts": [],
-        "thumbnail": {"time": plan["thumbnailTime"], "text": headline.upper(), "highlight": []},
+        "thumbnail": {"time": plan["thumbnailTime"], "x": 0.5, "y": 0.4, "zoom": 1},
         "caption": default_caption(headline, info, brand),
     }
     del job["thumbnailTime"]

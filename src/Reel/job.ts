@@ -26,7 +26,8 @@ export type ReelJob = {
 	reveal: {at: number; scale: number; x?: number; y?: number} | null;
 	/** Meme / reaction cut-ins that replace the picture (src inside public/). */
 	inserts: {at: number; duration: number; src: string; audio?: boolean; volume?: number}[];
-	thumbnail: {time: number; text: string; highlight: string[]};
+	/** Cover frame: source time, and the point (0..1 of the picture) to centre the full-bleed crop on. */
+	thumbnail: {time: number; x?: number; y?: number; zoom?: number};
 	caption: string;
 };
 
