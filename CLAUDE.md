@@ -47,5 +47,5 @@ Add `--browser-executable=/opt/pw-browsers/chromium` to render and still command
 ## Reels from Instagram links (Reel, ReelThumbnail: 1080x1920, 30fps)
 - When the user sends an Instagram reel link, follow `.claude/skills/reel-from-link/SKILL.md`. It produces the edited reel, a thumbnail and a caption in `out/reels/<slug>/`.
 - `npm run reel -- <link> --prepare-only` downloads, transcribes and writes the edit plan `public/reels/<slug>/job.json`. Edit that file, then run `npm run reel -- --slug <slug>` to render.
-- Code is in `src/Reel/` (tweet-card repost style: account header and hook, clip with phrase subtitles, punch-ins, flash cuts, reveal push-in). The account (The AI Edge Daily) comes from `reel.brand.json`. Thumbnails use its house style: a full-bleed frame, a navy fade, and the avatar/name/handle lockup.
+- Format only: never edit the raw clip (no zooms, flashes, sound effects, cut-ins or trims). It plays untouched inside the card. Code is in `src/Reel/` (tweet-card repost style: account header and hook, clip with phrase subtitles). The account (The AI Edge Daily) comes from `reel.brand.json`. Thumbnails use its house style: a full-bleed frame, a navy fade, and the avatar/name/handle lockup.
 - Python deps: `pip install -r scripts/reel/requirements.txt`. Downloaded clips stay out of git (`public/reels/` is ignored).

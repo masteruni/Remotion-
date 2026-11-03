@@ -215,32 +215,16 @@ def build_pages(words, max_words=6, max_chars=30, gap_ms=350):
 
 
 def plan_edit(pages, cuts, duration):
-    """Reference-style edit: hard punch-ins per phrase, white flashes, slow push on the reveal."""
-    punch = []
-    pattern = [1.0, 1.18, 1.0, 1.32]
-    for i, p in enumerate(pages):
-        scale = pattern[i % len(pattern)]
-        if p["text"].endswith(("?", "!")):
-            scale = 1.32
-        punch.append({"at": round(p["startMs"] / 1000, 2), "scale": scale})
+    """Format only: the clip plays untouched inside the card (no zooms, flashes or sound effects).
 
-    # The reveal: last scene cut in the final 40%, else the start of the last third.
-    late = [c for c in cuts if duration * 0.6 <= c <= duration - 1.5]
-    reveal = late[-1] if late else (
-        pages[int(len(pages) * 0.75)]["startMs"] / 1000 if len(pages) > 3 else duration * 0.7
-    )
-    reveal = round(reveal, 2)
-    punch = [p for p in punch if p["at"] < reveal]
-
-    mid = [c for c in cuts if duration * 0.2 <= c <= duration * 0.55]
-    pre = [c for c in late if c < reveal]  # e.g. a reaction cut-in right before the payoff
-    flashes = sorted({round(c, 2) for c in mid[:1] + pre[:1]} | {reveal})
-
+    The punchIns / flashes / reveal fields stay in job.json, empty, in case an edit is ever wanted.
+    """
     return {
-        "punchIns": punch,
-        "flashes": flashes,
-        "reveal": {"at": reveal, "scale": 1.55, "x": 0.5, "y": 0.45},
-        "thumbnailTime": round(min(reveal + 0.4, duration - 0.2), 2),
+        "punchIns": [],
+        "flashes": [],
+        "reveal": None,
+        # cover frame: a moment just past the middle; the editor picks a face close-up
+        "thumbnailTime": round(duration * 0.45, 2),
     }
 
 
