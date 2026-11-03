@@ -5,6 +5,14 @@ import { Title } from "./HelloWorld/Title";
 import { Keynote, keynoteSchema } from "./Keynote/Keynote";
 import { TOTAL_SECONDS } from "./Keynote/theme";
 import { Promo, PROMO_FRAMES } from "./Promo/Promo";
+import {
+  calculateReelMetadata,
+  calculateThumbnailMetadata,
+  REEL_FPS,
+  reelSchema,
+} from "./Reel/job";
+import { Reel } from "./Reel/Reel";
+import { Thumbnail } from "./Reel/Thumbnail";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -32,6 +40,30 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
       />
+      <Folder name="Reels">
+        <Composition
+          id="Reel"
+          component={Reel}
+          schema={reelSchema}
+          calculateMetadata={calculateReelMetadata}
+          durationInFrames={150}
+          fps={REEL_FPS}
+          width={1080}
+          height={1920}
+          defaultProps={{job: ""}}
+        />
+        <Composition
+          id="ReelThumbnail"
+          component={Thumbnail}
+          schema={reelSchema}
+          calculateMetadata={calculateThumbnailMetadata}
+          durationInFrames={1}
+          fps={REEL_FPS}
+          width={1080}
+          height={1920}
+          defaultProps={{job: ""}}
+        />
+      </Folder>
       <Folder name="Elements">
         <Composition
           id="Logo"

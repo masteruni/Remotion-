@@ -36,7 +36,8 @@
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
     "soundtrack": "node scripts/generate-soundtrack.mjs --music-only",
-    "render:keynote": "remotion render LeilunaKeynote out/leiluna-keynote.mp4 --crf=16 --timeout=120000"
+    "render:keynote": "remotion render LeilunaKeynote out/leiluna-keynote.mp4 --crf=16 --timeout=120000",
+    "reel": "node scripts/reel/make-reel.mjs"
   },
   "allowScripts": {
     "esbuild": false

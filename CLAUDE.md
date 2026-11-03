@@ -43,3 +43,9 @@ Add `--browser-executable=/opt/pw-browsers/chromium` to render and still command
 - `src/Promo/Promo.tsx` runs five shots (lengths in `src/Promo/theme.ts`): format picker, services list expanding into results, contact input, kinetic headline lines, logo lockup with the URL.
 - Reuses the keynote's thumbnails, brand layers and sound-effect files. Cues are in `src/Promo/sfx.ts`. Music: `node scripts/generate-soundtrack.mjs --music-only --plain --length=12 --drop=9.5 --out=promo-music.wav`.
 - No WebGL, so it renders fast: `npx remotion render LeilunaSitePromo out/leiluna-site-promo.mp4 --concurrency=3`.
+
+## Reels from Instagram links (Reel, ReelThumbnail: 1080x1920, 30fps)
+- When the user sends an Instagram reel link, follow `.claude/skills/reel-from-link/SKILL.md`. It produces the edited reel, a thumbnail and a caption in `out/reels/<slug>/`.
+- `npm run reel -- <link> --prepare-only` downloads, transcribes and writes the edit plan `public/reels/<slug>/job.json`. Edit that file, then run `npm run reel -- --slug <slug>` to render.
+- Code is in `src/Reel/` (tweet-card repost style: account header and hook, clip with phrase subtitles, punch-ins, flash cuts, reveal push-in). The account header comes from `reel.brand.json`.
+- Python deps: `pip install -r scripts/reel/requirements.txt`. Downloaded clips stay out of git (`public/reels/` is ignored).
